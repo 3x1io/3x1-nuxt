@@ -5,7 +5,7 @@
         <div class="card">
           <div class="card-block">
             <Form action="admin" :data="{}" :inputs="form" inline-template>
-              <form class="form-horizontal" role="form" method="POST" @submit.prevent="onSubmit" novalidate>
+              <form class="form-horizontal" role="form" method="POST" @submit.prevent="login" novalidate>
                 <div class="auth-header">
                   <h1 class="auth-title">Login</h1>
                   <p class="auth-subtitle">Input Email & Password To login</p>
@@ -48,11 +48,28 @@
 
 <script>
   export default {
+    name: "Login",
+    created() {
+      if(this.$fire.auth.currentUser){
+        this.$router.push('/')
+      }
+    },
     data(){
       return {
         form: {
-
+          email: "",
+          password: ""
         }
+      }
+    },
+    methods:{
+      login (){
+        this.$fire.auth.signInWithEmailAndPassword(this.form.email, this.form.password)
+          .then(user => {
+            this.$swal('Success', "Login Success", 'success');
+            this.$router.push('/admin')
+          })
+          .catch(e => this.$swal('UnAuth', e.message, 'error'))
       }
     }
   }
